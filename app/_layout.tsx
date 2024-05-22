@@ -2,9 +2,13 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { PaperProvider } from "react-native-paper";
-import { View } from "react-native";
-import QRScanner from "@/components/Camera";
-import LocationDetails from "@/components/LocationDetails";
+import { View, Text } from "react-native";
+import QRScanner from "@/pages/Camera";
+import LocationDetails from "@/pages/LocationDetails";
+import LoginPage from "@/pages/LoginPage";
+import UserPanel from "@/pages/UserPanel";
+import InventoriedRack from "@/pages/InventoriedRack/InventoriedRack";
+import { AppContextProvider, useAppContext } from "@/contexts/AppContext";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -36,25 +40,50 @@ export default function RootLayout() {
 
   return (
     <PaperProvider>
-      <RootLayoutNav />
+      <AppContextProvider>
+        <RootLayoutNav />
+      </AppContextProvider>
     </PaperProvider>
   );
 }
 
 function RootLayoutNav() {
   const [dataFromQR, setDataFromQR] = useState<number | null>(null);
-  console.log("dataFromQR: ", dataFromQR);
-  return (
-    <View style={{ width: "100%", height: "100%" }}>
-      <View style={{ backgroundColor: "black", height: 30, width: "100%" }} />
-      {dataFromQR ? (
+  const [openScanner, setOpenScanner] = useState(false);
+  const { isInventoryInProgress, currentUser } = useAppContext();
+
+  const navigation = () => {
+    if (!currentUser) return <LoginPage />;
+
+    if (dataFromQR)
+      return (
         <LocationDetails
           dataFromQR={dataFromQR}
           setDataFromQR={setDataFromQR}
         />
-      ) : (
-        <QRScanner setDataFromQR={setDataFromQR} />
-      )}
-    </View>
+      );
+
+    if (openScanner)
+      return (
+        <QRScanner
+          setDataFromQR={setDataFromQR}
+          setOpenScanner={setOpenScanner}
+        />
+      );
+    console.log(isInventoryInProgress);
+    console.log(currentUser?.role === "worker");
+    if (isInventoryInProgress && currentUser?.role === "worker")
+      return <InventoriedRack />;
+
+    if (currentUser) return <UserPanel setOpenScanner={setOpenScanner} />;
+  };
+
+  return (
+    <>
+      <View style={{ backgroundColor: "black", height: 22, zIndex: 1000 }} />
+      <View style={{ width: "100%", height: "100%", padding: 12 }}>
+        {navigation()}
+      </View>
+    </>
   );
 }
