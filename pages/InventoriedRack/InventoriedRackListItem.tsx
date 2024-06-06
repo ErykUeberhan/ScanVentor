@@ -1,8 +1,8 @@
 import { Fontisto, MaterialIcons } from "@expo/vector-icons";
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import { IconButton } from "react-native-paper";
-import { Item } from "../LocationDetails";
+import { Item } from "../LocationDetails/LocationDetails";
 
 type ColorObject = {
   green: string;
@@ -11,15 +11,15 @@ type ColorObject = {
 };
 
 const BorderColors = {
-  green: "#36846b",
-  yellow: "#d68438",
-  red: "#b84d69",
+  green: "#00ad91",
+  yellow: "#fccb23",
+  red: "#cf163a",
 };
 
 const BackgroundColors = {
-  green: "#4bb39a",
-  yellow: "#f1b24b",
-  red: "#f96d6d",
+  green: "#00ad91",
+  yellow: "#fccb23",
+  red: "#cf163a",
 };
 
 const InventoriedRackListItem = ({
@@ -51,17 +51,14 @@ const InventoriedRackListItem = ({
         borderRadius: 8,
       }}
     >
-      <View
-        style={{
-          width: 40,
-          height: 40,
-          backgroundColor: "#eff0fb",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Fontisto name="laptop" size={24} color="black" />
-      </View>
+      <Image
+        source={
+          item.stock_id === 2
+            ? require("../../assets/icons/bolt.png")
+            : require("../../assets/icons/laptop.png")
+        }
+        style={{ width: 42, height: 42 }}
+      />
       <View>
         <Text style={{ fontFamily: "SpaceMono", fontWeight: 700 }}>
           {item.name}

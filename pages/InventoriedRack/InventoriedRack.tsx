@@ -1,12 +1,11 @@
-import ItemModal from "@/components/ItemModal";
 import React, { useEffect, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { IconButton, Searchbar } from "react-native-paper";
 import InventoriedRackListItem from "./InventoriedRackListItem";
 import { databaseServerIp } from "@/global-consts";
 import InventoriedRackItemModal from "./InventoriedRackItemModal";
 import { useAppContext } from "@/contexts/AppContext";
-import { Item } from "../LocationDetails";
+import { Item } from "../LocationDetails/LocationDetails";
 import { Entypo } from "@expo/vector-icons";
 
 type RackToInventory = {
@@ -36,7 +35,7 @@ const InventoriedRack = () => {
     fetch(
       `http://${databaseServerIp}:3000/api/confirm-rack-inventory/${rackToInventory?.id}`
     );
-    setIsInventoryInProgress(false);
+    setIsInventoryInProgress("no");
   };
 
   const changeItemCountingResult = (countingResult: number) => {
@@ -75,11 +74,16 @@ const InventoriedRack = () => {
     )
       .then((response) => response.json())
       .then((json) => {
-        setRackItems(json);
-        console.log("json: ", json);
+        setRackItems(
+          searchQuery
+            ? json.filter((item: Item) =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+            : json
+        );
       })
       .catch((error) => console.error(error));
-  }, [databaseServerIp, rackToInventory.id]);
+  }, [databaseServerIp, rackToInventory.id, searchQuery]);
 
   useEffect(() => {
     setIsThereUncountedItem(
@@ -89,11 +93,25 @@ const InventoriedRack = () => {
 
   return (
     <View style={{ gap: 12 }}>
-      <View>
-        <Text>The inventory process is ongoing,</Text>
-        <Text>the assigned shelf for you is:</Text>
-        <Text>Rack name: {rackToInventory.name}</Text>
-        <Text>Rack ID: {rackToInventory.id}</Text>
+      <View style={{ alignItems: "center", gap: 4 }}>
+        <Text
+          style={{
+            color: "#00483d",
+            fontSize: 20,
+            fontWeight: 700,
+          }}
+        >
+          Inventory process is ongoing
+        </Text>
+        <Text
+          style={{
+            color: "#00483d",
+          }}
+        >
+          Please check{" "}
+          <Text style={{ fontWeight: 700 }}>{rackToInventory.name}</Text> with
+          rack ID <Text style={{ fontWeight: 700 }}>{rackToInventory.id}</Text>
+        </Text>
       </View>
 
       <View
@@ -116,6 +134,9 @@ const InventoriedRack = () => {
             borderRadius: 16,
             borderColor: "#d8d8d8",
             backgroundColor: "white",
+          }}
+          inputStyle={{
+            color: "black",
           }}
         />
         <IconButton
@@ -145,11 +166,12 @@ const InventoriedRack = () => {
       ) : (
         <Text>Loading...</Text>
       )}
-      <InventoriedRackItemModal
-        visible={!!currentItemId}
-        hideDialog={hideDialog}
-        changeItemCountingResult={changeItemCountingResult}
-      />
+      {!!currentItemId && (
+        <InventoriedRackItemModal
+          hideDialog={hideDialog}
+          changeItemCountingResult={changeItemCountingResult}
+        />
+      )}
     </View>
   );
 };

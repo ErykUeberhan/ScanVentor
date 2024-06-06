@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { PaperProvider } from "react-native-paper";
 import { View, Text } from "react-native";
 import QRScanner from "@/pages/Camera";
-import LocationDetails from "@/pages/LocationDetails";
 import LoginPage from "@/pages/LoginPage";
 import UserPanel from "@/pages/UserPanel";
 import InventoriedRack from "@/pages/InventoriedRack/InventoriedRack";
 import { AppContextProvider, useAppContext } from "@/contexts/AppContext";
+import ItemsSearch from "@/pages/ItemsSearch/ItemsSearch";
+import NotificationBar from "@/components/NotificationBar";
+import InventoryResults from "@/pages/InventoryResults";
+import LocationDetails from "@/pages/LocationDetails/LocationDetails";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -50,7 +53,10 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const [dataFromQR, setDataFromQR] = useState<number | null>(null);
   const [openScanner, setOpenScanner] = useState(false);
-  const { isInventoryInProgress, currentUser } = useAppContext();
+  const [openItemsSearch, setOpenItemsSearch] = useState(false);
+  const [openInventoryResults, setOpenInventoryResults] = useState(false);
+  const { isInventoryInProgress, currentUser, notificationMessage } =
+    useAppContext();
 
   const navigation = () => {
     if (!currentUser) return <LoginPage />;
@@ -60,6 +66,7 @@ function RootLayoutNav() {
         <LocationDetails
           dataFromQR={dataFromQR}
           setDataFromQR={setDataFromQR}
+          setOpenScanner={setOpenScanner}
         />
       );
 
@@ -70,12 +77,26 @@ function RootLayoutNav() {
           setOpenScanner={setOpenScanner}
         />
       );
-    console.log(isInventoryInProgress);
-    console.log(currentUser?.role === "worker");
-    if (isInventoryInProgress && currentUser?.role === "worker")
+
+    if (openItemsSearch)
+      return <ItemsSearch setOpenItemsSearch={setOpenItemsSearch} />;
+
+    if (isInventoryInProgress === "yes" && currentUser?.role === "worker")
       return <InventoriedRack />;
 
-    if (currentUser) return <UserPanel setOpenScanner={setOpenScanner} />;
+    if (openInventoryResults)
+      return (
+        <InventoryResults setOpenInventoryResults={setOpenInventoryResults} />
+      );
+
+    if (currentUser)
+      return (
+        <UserPanel
+          setOpenScanner={setOpenScanner}
+          setOpenItemsSearch={setOpenItemsSearch}
+          setOpenInventoryResults={setOpenInventoryResults}
+        />
+      );
   };
 
   return (
@@ -84,6 +105,9 @@ function RootLayoutNav() {
       <View style={{ width: "100%", height: "100%", padding: 12 }}>
         {navigation()}
       </View>
+      {notificationMessage && (
+        <NotificationBar notificationMessage={notificationMessage} />
+      )}
     </>
   );
 }

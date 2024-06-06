@@ -1,55 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Keyboard,
   View,
   TextInput,
   Text,
-  Animated,
-  Modal,
-  StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  Modal,
+  StyleSheet,
   Platform,
 } from "react-native";
 
-const InventoriedRackItemModal = ({
+const LocationDetailsItemModal = ({
   hideDialog,
-  changeItemCountingResult,
+  moveItem,
 }: {
   hideDialog: () => void;
-  changeItemCountingResult: (countingResult: number) => void;
+  moveItem: (quantity: number, location: number) => void;
 }) => {
-  const [countingResult, setCountingResult] = useState(1);
-  const [keyboardOffset] = useState(new Animated.Value(0));
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      (event) => {
-        Animated.timing(keyboardOffset, {
-          duration: event.duration,
-          toValue: -event.endCoordinates.height,
-          useNativeDriver: true,
-        }).start();
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        Animated.timing(keyboardOffset, {
-          duration: 250,
-          toValue: 0,
-          useNativeDriver: true,
-        }).start();
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
+  const [quantity, setQuantity] = useState(1);
+  const [location, setLocation] = useState(1);
 
   return (
     <Modal
@@ -93,11 +64,12 @@ const InventoriedRackItemModal = ({
                 width: "80%",
                 padding: 24,
                 borderRadius: 12,
-                gap: 12,
+                gap: 8,
               }}
             >
               <Text
                 style={{
+                  alignSelf: "center",
                   color: "#00483d",
                   fontSize: 24,
                   fontWeight: 700,
@@ -105,16 +77,33 @@ const InventoriedRackItemModal = ({
               >
                 Enter new value
               </Text>
+              <Text
+                style={{ color: "black", marginBottom: -4, fontWeight: 700 }}
+              >
+                Number of items:
+              </Text>
               <TextInput
                 keyboardType="numeric"
-                value={String(countingResult)}
-                onChangeText={(text) => setCountingResult(Number(text))}
+                value={String(quantity)}
+                onChangeText={(text) => setQuantity(Number(text))}
                 onBlur={() => {
-                  setCountingResult(Number(countingResult));
+                  setQuantity(Number(quantity));
                 }}
-                style={{
-                  ...styles.input,
+                style={styles.input}
+              />
+              <Text
+                style={{ color: "black", marginBottom: -4, fontWeight: 700 }}
+              >
+                New location ID:
+              </Text>
+              <TextInput
+                keyboardType="numeric"
+                value={String(location)}
+                onChangeText={(text) => setLocation(Number(text))}
+                onBlur={() => {
+                  setLocation(Number(quantity));
                 }}
+                style={styles.input}
               />
               <View
                 style={{
@@ -127,7 +116,7 @@ const InventoriedRackItemModal = ({
               >
                 <TouchableOpacity
                   onPress={() => {
-                    changeItemCountingResult(countingResult);
+                    moveItem(quantity, location);
                     hideDialog();
                   }}
                   style={styles.button}
@@ -155,6 +144,7 @@ const InventoriedRackItemModal = ({
     </Modal>
   );
 };
+
 const styles = StyleSheet.create({
   input: {
     minWidth: "100%",
@@ -175,4 +165,5 @@ const styles = StyleSheet.create({
     padding: 12,
   },
 });
-export default InventoriedRackItemModal;
+
+export default LocationDetailsItemModal;

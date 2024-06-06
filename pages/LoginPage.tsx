@@ -66,15 +66,7 @@ const LoginPage = () => {
                 <TextInput
                   value={login}
                   onChangeText={(text) => setLogin(text)}
-                  style={{
-                    width: "100%",
-                    height: 60,
-                    padding: 12,
-                    borderWidth: 2,
-                    borderRadius: 16,
-                    borderColor: "#d8d8d8",
-                    backgroundColor: "white",
-                  }}
+                  style={styles.input}
                 />
               </View>
               <View

@@ -8,14 +8,19 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const UserPanel = ({
   setOpenScanner,
+  setOpenItemsSearch,
+  setOpenInventoryResults,
 }: {
   setOpenScanner: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenItemsSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenInventoryResults: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const {
     isInventoryInProgress,
     currentUser,
     setIsInventoryInProgress,
     setCurrentUser,
+    setNotificationMessage,
   } = useAppContext();
 
   const currentUserCapitalized =
@@ -25,12 +30,12 @@ const UserPanel = ({
 
   const startInventoryProcess = () => {
     fetch(`http://${databaseServerIp}:3000/api/start-inventory-process`);
-    setIsInventoryInProgress(true);
+    setIsInventoryInProgress("yes");
   };
 
   const cancelInventoryProcess = () => {
     fetch(`http://${databaseServerIp}:3000/api/cancel-inventory-process`);
-    setIsInventoryInProgress(false);
+    setIsInventoryInProgress("no");
   };
 
   return (
@@ -63,7 +68,10 @@ const UserPanel = ({
           text={"Move items"}
           action={() => setOpenScanner(true)}
         />
-        <UserPanelButton text="Search for item" action={() => ""} />
+        <UserPanelButton
+          text="Search for item"
+          action={() => setOpenItemsSearch(true)}
+        />
       </View>
       <View
         style={{
@@ -72,14 +80,28 @@ const UserPanel = ({
           width: "100%",
         }}
       >
-        <UserPanelButton
-          text={isInventoryInProgress ? "Cancel inventory" : "Start inventory"}
-          action={() =>
-            isInventoryInProgress
-              ? cancelInventoryProcess()
-              : startInventoryProcess()
-          }
-        />
+        {currentUser?.role === "admin" && (
+          <UserPanelButton
+            text={
+              isInventoryInProgress === "yes"
+                ? "Cancel inventory"
+                : isInventoryInProgress === "no"
+                ? "Start inventory"
+                : "Show inventory results"
+            }
+            action={() => {
+              if (isInventoryInProgress === "yes") {
+                cancelInventoryProcess();
+                setNotificationMessage("Inventory process canceled!");
+              } else if (isInventoryInProgress === "no") {
+                startInventoryProcess();
+                setNotificationMessage("Inventory process started!");
+              } else {
+                setOpenInventoryResults(true);
+              }
+            }}
+          />
+        )}
         <UserPanelButton text="Log out" action={() => setCurrentUser(null)} />
       </View>
     </View>
