@@ -1,4 +1,4 @@
-import { CurrentUser, useAppContext } from "@/contexts/AppContext";
+import { useAppContext } from "@/contexts/AppContext";
 import { databaseServerIp } from "@/global-consts";
 import React from "react";
 import {
@@ -44,7 +44,7 @@ const LoginPage = () => {
             height: "100%",
           }}
         >
-          <Text style={{ color: "#00483d", fontSize: 32 }}>Scan Vendor</Text>
+          <Text style={{ color: "#00483d", fontSize: 32 }}>ScanVentor</Text>
           <Image
             source={require("../assets/icons/image.png")}
             style={{ width: 100, height: 100 }}

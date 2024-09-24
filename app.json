@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "scan-vendor-mobile",
-    "slug": "scan-vendor-mobile",
+    "name": "scan-ventor-mobile",
+    "slug": "scan-ventor-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },

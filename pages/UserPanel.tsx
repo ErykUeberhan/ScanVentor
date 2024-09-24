@@ -1,9 +1,7 @@
-import { CurrentUser, useAppContext } from "@/contexts/AppContext";
+import { useAppContext } from "@/contexts/AppContext";
 import { databaseServerIp } from "@/global-consts";
-import { MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
 import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
-import { IconButton } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 
 const UserPanel = ({
